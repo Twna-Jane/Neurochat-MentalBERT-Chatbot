@@ -15,12 +15,12 @@ export default function AppRoutes() {
     <Router>
       <Routes>
         {/* Login routes */}
-        <Route path="/login/patient" element={<LoginPatient />} />
+        <Route path="/login/patients" element={<LoginPatient />} />
         <Route path="/login/clinician" element={<LoginClinician />} />
         <Route path="/login/admin" element={<LoginAdmin />} />
 
         {/* Signup routes */}
-        <Route path="/signup/patient" element={<SignupPatient />} />
+        <Route path="/signup/patients" element={<SignupPatient />} />
         <Route path="/signup/clinician" element={<SignupClinician />} />
         <Route path="/signup/admin" element={<SignupAdmin />} />
       </Routes>
