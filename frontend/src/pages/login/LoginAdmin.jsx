@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -63,6 +63,17 @@ export default function LoginAdmin() {
               className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          {/* Forgot password link */}
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => navigate("/request-reset")}
+              className="text-sm center text-indigo-600 hover:underline"
+            >
+              Forgot Password?
             </button>
           </div>
 

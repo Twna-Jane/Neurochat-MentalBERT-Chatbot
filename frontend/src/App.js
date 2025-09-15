@@ -14,6 +14,10 @@ import SignupPatient from "./pages/signup/SignupPatient";
 import SignupClinician from "./pages/signup/SignupClinician";
 import SignupAdmin from "./pages/signup/SignupAdmin";
 
+//Reset password
+import RequestReset from "./pages/requestReset";
+import ResetPassword from "./pages/resetPassword";
+
 export default function App() {
   return (
     <Router>
@@ -33,6 +37,11 @@ export default function App() {
           <Route path="/signup/patient" element={<SignupPatient />} />
           <Route path="/signup/clinician" element={<SignupClinician />} />
           <Route path="/signup/admin" element={<SignupAdmin />} />
+
+           {/* Reset password Routes */}
+          <Route path="/request-reset" element={<RequestReset />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+
         </Route>
       </Routes>
     </Router>
