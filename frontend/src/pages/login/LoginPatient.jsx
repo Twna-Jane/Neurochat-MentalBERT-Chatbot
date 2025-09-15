@@ -67,6 +67,17 @@ export default function LoginPatient() {
             </button>
           </div>
 
+          {/* Forgot password link */}
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => navigate("/request-reset")}
+              className="text-sm text-indigo-600 hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition"

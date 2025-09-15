@@ -23,6 +23,10 @@ export default function AppRoutes() {
         <Route path="/signup/patients" element={<SignupPatient />} />
         <Route path="/signup/clinician" element={<SignupClinician />} />
         <Route path="/signup/admin" element={<SignupAdmin />} />
+
+        {/* Reset password Routes */}
+        <Route path="/request-reset" element={<RequestReset />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </Router>
   );
