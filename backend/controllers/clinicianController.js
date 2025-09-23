@@ -104,7 +104,13 @@ export const verifyClinicianOTP = (req, res) => {
     const clearOtpSql = "UPDATE clinicians SET otp = NULL WHERE id = ?";
     db.query(clearOtpSql, [userId]);
 
-    res.json({ message: "✅ Login successful with 2FA", user: results[0] });
+    res.json({ message: "✅ Login successful with 2FA",
+      user: {
+        id: results[0].id,
+        email: results[0].email,
+        role: results[0].role
+      }
+    });
   });
 };
 

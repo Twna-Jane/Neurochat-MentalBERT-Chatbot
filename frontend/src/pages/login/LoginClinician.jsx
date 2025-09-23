@@ -54,7 +54,10 @@ export default function LoginClinician() {
         otp,
       });
 
-      localStorage.setItem("clinician", JSON.stringify(res.data.user));
+      // Store role + user details
+      const userWithRole = { ...res.data.user, role: "clinician" };
+      localStorage.setItem("authUser", JSON.stringify(userWithRole));
+
       navigate("/dashboard/clinician");
     } catch (err) {
       setError(err.response?.data?.error || "OTP verification failed");
