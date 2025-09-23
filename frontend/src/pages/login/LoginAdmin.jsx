@@ -54,7 +54,13 @@ export default function LoginAdmin() {
         otp,
       });
 
-      localStorage.setItem("admin", JSON.stringify(res.data.user));
+      // ✅ Save token and role to localStorage
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+      localStorage.setItem("role", "admin"); // ✅ explicit role
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
       navigate("/dashboard/admin");
     } catch (err) {
       setError(err.response?.data?.error || "OTP verification failed");

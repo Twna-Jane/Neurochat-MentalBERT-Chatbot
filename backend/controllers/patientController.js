@@ -103,7 +103,13 @@ export const verifyPatientOTP = (req, res) => {
     // Clear OTP after use
     db.query("UPDATE patients SET otp = NULL WHERE id = ?", [userId]);
 
-    res.json({ message: "✅ OTP verified, login successful", user: results[0] });
+    res.json({ message: "✅ OTP verified, login successful", 
+      user: {
+        id: results[0].id,
+        email: results[0].email,
+        role: results[0].role
+      }
+    });
   });
 };
 

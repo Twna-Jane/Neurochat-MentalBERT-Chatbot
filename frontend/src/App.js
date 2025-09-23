@@ -14,9 +14,13 @@ import SignupPatient from "./pages/signup/SignupPatient";
 import SignupClinician from "./pages/signup/SignupClinician";
 import SignupAdmin from "./pages/signup/SignupAdmin";
 
-//Reset password
+// Reset password
 import RequestReset from "./pages/requestReset";
 import ResetPassword from "./pages/resetPassword";
+
+// Protected Route + Unauthorized
+import ProtectedRoute from "./components/protectedRoutes";
+import Unauthorized from "./pages/Unauthorized";
 
 export default function App() {
   return (
@@ -38,10 +42,24 @@ export default function App() {
           <Route path="/signup/clinician" element={<SignupClinician />} />
           <Route path="/signup/admin" element={<SignupAdmin />} />
 
-           {/* Reset password Routes */}
+          {/* Reset password Routes */}
           <Route path="/request-reset" element={<RequestReset />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
 
+          {/* Unauthorized */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
+
+          {/* Example Protected Route (you can replace later) */}
+          <Route
+            path="/protected"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "patient", "clinician"]}>
+                <h2 className="text-center mt-10 text-indigo-600 font-bold text-xl">
+                  This is a protected page
+                </h2>
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </Router>
