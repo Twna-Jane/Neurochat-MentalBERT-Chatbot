@@ -62,7 +62,7 @@ mental-health-chatbot/
 ```bash
 cd backend
 npm install
-cp .env.example .env   # update DB credentials and API keys
+cp .env.example .env   
 npm start
 ```
 
@@ -70,7 +70,7 @@ npm start
 ```bash
 cd frontend
 npm install
-cp .env.example .env   # set REACT_APP_API_URL
+cp .env.example .env   
 npm start
 ```
 
@@ -129,8 +129,8 @@ REACT_APP_API_URL=http://localhost:5000/api
 ---
 
 ## 👩‍💻 Contributors
-- **You (Developer)** – Full-stack & ML integration  
-- **OpenAI / Hugging Face** – Pretrained MentalBERT model  
+- **Tiffany Ndungi (Developer)** – Full-stack & ML integration  
+- **Hugging Face** – Pretrained MentalBERT model  
 
 ---
 
