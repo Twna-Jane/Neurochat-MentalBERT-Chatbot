@@ -1,3 +1,4 @@
+// controllers/adminController.js
 import db from "../db.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
@@ -21,39 +22,61 @@ const sendOtpEmail = async (email, otp) => {
 };
 
 // ==================== Signup Admin ====================
-export const signupAdmin = (req, res) => {
-  const { name, email, password } = req.body;
+export const signupAdmin = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-  const hashedPassword = bcrypt.hashSync(password, 10);
+    // Check if admin already exists
+    const existingAdminSnap = await db.collection("admins")
+      .where("email", "==", email)
+      .get();
 
-  const sql = "INSERT INTO admins (name, email, password) VALUES (?, ?, ?)";
-  db.query(sql, [name, email, hashedPassword], (err) => {
-    if (err) {
-      console.error("❌ Error inserting admin:", err);
-      return res.status(500).json({ error: "Database error" });
+    if (!existingAdminSnap.empty) {
+      return res.status(400).json({ error: "Admin already exists" });
     }
-    res.status(201).json({ message: "✅ Admin registered successfully!" });
-  });
+
+    // Hash password and save to Firestore
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const newAdmin = {
+      name,
+      email,
+      password: hashedPassword,
+      role: "admin",
+      createdAt: new Date(),
+      otp: null
+    };
+
+    const docRef = await db.collection("admins").add(newAdmin);
+
+    res.status(201).json({
+      message: " Admin registered successfully!",
+      id: docRef.id,
+    });
+  } catch (err) {
+    console.error(" Error inserting admin:", err);
+    res.status(500).json({ error: "Failed to create admin" });
+  }
 };
 
 // ==================== Login Admin (Step 1: Password Check + Send OTP) ====================
-export const loginAdmin = (req, res) => {
-  const { email, password } = req.body;
+export const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  const sql = "SELECT * FROM admins WHERE email = ?";
-  db.query(sql, [email], async (err, results) => {
-    if (err) {
-      console.error("❌ Login error:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
+    // Find admin by email
+    const snapshot = await db.collection("admins")
+      .where("email", "==", email)
+      .get();
 
-    if (results.length === 0) {
+    if (snapshot.empty) {
       return res.status(401).json({ error: "Admin not found" });
     }
 
-    const admin = results[0];
-    const isMatch = bcrypt.compareSync(password, admin.password);
+    const adminDoc = snapshot.docs[0];
+    const admin = { id: adminDoc.id, ...adminDoc.data() };
 
+    const isMatch = bcrypt.compareSync(password, admin.password);
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid password" });
     }
@@ -61,94 +84,90 @@ export const loginAdmin = (req, res) => {
     // Generate a 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store OTP temporarily in DB
-    const updateOtpSql = "UPDATE admins SET otp = ? WHERE id = ?";
-    db.query(updateOtpSql, [otp, admin.id], async (err2) => {
-      if (err2) {
-        console.error("❌ Error saving OTP:", err2);
-        return res.status(500).json({ error: "Database error" });
-      }
+    // Update Firestore document with OTP
+    await db.collection("admins").doc(admin.id).update({ otp });
 
-      try {
-        await sendOtpEmail(email, otp);
-        res.json({
-          message: "📧 OTP sent to email. Please verify.",
-          userId: admin.id, // Send back ID for step 2
-        });
-      } catch (mailErr) {
-        console.error("❌ Email error:", mailErr);
-        res.status(500).json({ error: "Error sending OTP" });
-      }
-    });
-  });
+    try {
+      await sendOtpEmail(email, otp);
+      res.json({
+        message: "📧 OTP sent to email. Please verify.",
+        userId: admin.id,
+      });
+    } catch (mailErr) {
+      console.error(" Email error:", mailErr);
+      res.status(500).json({ error: "Error sending OTP" });
+    }
+  } catch (err) {
+    console.error(" Login error:", err);
+    res.status(500).json({ error: "Failed to log in" });
+  }
 };
 
 // ==================== Verify Admin OTP (Step 2) ====================
-export const verifyAdminOTP = (req, res) => {
-  const { userId, otp } = req.body;
+export const verifyAdminOTP = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
 
-  const sql = "SELECT * FROM admins WHERE id = ? AND otp = ?";
-  db.query(sql, [userId, otp], (err, results) => {
-    if (err) {
-      console.error("❌ OTP verification error:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
+    const docRef = db.collection("admins").doc(userId);
+    const doc = await docRef.get();
 
-    if (results.length === 0) {
-      return res.status(400).json({ error: "Invalid OTP" });
-    }
-
-    // Clear OTP after successful login
-    const clearOtpSql = "UPDATE admins SET otp = NULL WHERE id = ?";
-    db.query(clearOtpSql, [userId]);
-
-    res.json({ message: "✅ Login successful with 2FA", 
-      user: {
-      id: results[0].id,
-      email: results[0].email,
-      role: results[0].role
-    }
-    
- });
-  });
-};
-
-// ==================== Resend Admin OTP ====================
-export const resendAdminOTP = (req, res) => {
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
-  }
-
-  const sql = "SELECT * FROM admins WHERE id = ?";
-  db.query(sql, [userId], async (err, results) => {
-    if (err) {
-      console.error("❌ Resend OTP error:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-
-    if (results.length === 0) {
+    if (!doc.exists) {
       return res.status(404).json({ error: "Admin not found" });
     }
 
-    const admin = results[0];
+    const admin = doc.data();
+
+    if (admin.otp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    // Clear OTP after successful verification
+    await docRef.update({ otp: null });
+
+    res.json({
+      message: " Login successful with 2FA",
+      user: {
+        id: userId,
+        email: admin.email,
+        role: admin.role || "admin",
+      },
+    });
+  } catch (err) {
+    console.error(" OTP verification error:", err);
+    res.status(500).json({ error: "Failed to verify OTP" });
+  }
+};
+
+// ==================== Resend Admin OTP ====================
+export const resendAdminOTP = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const docRef = db.collection("admins").doc(userId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    const admin = doc.data();
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const updateOtpSql = "UPDATE admins SET otp = ? WHERE id = ?";
-    db.query(updateOtpSql, [newOtp, admin.id], async (err2) => {
-      if (err2) {
-        console.error("❌ Error updating OTP:", err2);
-        return res.status(500).json({ error: "Database error" });
-      }
+    await docRef.update({ otp: newOtp });
 
-      try {
-        await sendOtpEmail(admin.email, newOtp);
-        res.json({ message: "📧 New OTP resent to email." });
-      } catch (mailErr) {
-        console.error("❌ Email error:", mailErr);
-        res.status(500).json({ error: "Error resending OTP" });
-      }
-    });
-  });
+    try {
+      await sendOtpEmail(admin.email, newOtp);
+      res.json({ message: "📧 New OTP resent to email." });
+    } catch (mailErr) {
+      console.error(" Email error:", mailErr);
+      res.status(500).json({ error: "Error resending OTP" });
+    }
+  } catch (err) {
+    console.error(" Resend OTP error:", err);
+    res.status(500).json({ error: "Failed to resend OTP" });
+  }
 };
