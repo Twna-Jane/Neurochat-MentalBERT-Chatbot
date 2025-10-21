@@ -1,8 +1,8 @@
 import admin from "firebase-admin";
 import dotenv from "dotenv";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 dotenv.config();
 
@@ -11,9 +11,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-const serviceAccountPath = path.join(__dirname, "neurochat-mentalbert-firebase-adminsdk-fbsvc-dae07a25ee.json");
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+const serviceAccountPath = process.env.FIREBASE_KEY_PATH;
 
+
+const absolutePath = path.isAbsolute(serviceAccountPath)
+  ? serviceAccountPath
+  : path.resolve(__dirname, serviceAccountPath);
+
+
+if (!fs.existsSync(absolutePath)) {
+  console.error(` Firebase key file not found at: ${absolutePath}`);
+  process.exit(1);
+}
+
+
+const serviceAccount = JSON.parse(fs.readFileSync(absolutePath, "utf8"));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -21,6 +33,6 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-console.log("✅ Connected to Firebase Firestore");
+console.log(" Connected to Firebase Firestore");
 
 export default db;
