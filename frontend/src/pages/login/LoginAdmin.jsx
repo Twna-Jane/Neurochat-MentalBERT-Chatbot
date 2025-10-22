@@ -61,7 +61,7 @@ export default function LoginAdmin() {
       localStorage.setItem("role", "admin"); // ✅ explicit role
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/dashboard/admin");
+      navigate("/admin/");
     } catch (err) {
       setError(err.response?.data?.error || "OTP verification failed");
     } finally {

@@ -26,13 +26,21 @@ import Unauthorized from "./pages/Unauthorized";
 import ChatInterface from "./pages/chatInterface";
 import PatientProfile from "./pages/patientProfile";
 
+// Admin Dashboard and nested pages
+import AdminDashboard from "./pages/admin/adminDashboard";
+import Overview from "./pages/admin/overview";
+import SettingsPage from "./pages/admin/settings";
+import BiasAudit from "./pages/admin/biasAudit";
+import Security from "./pages/admin/security";
+import Reports from "./pages/admin/reports";
+import Profile from "./pages/admin/profile";
+
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Main Layout (for public pages and shared structure) */}
+        {/* Public Layout for general pages */}
         <Route element={<Layout />}>
-          {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
@@ -54,7 +62,7 @@ export default function App() {
           {/* Unauthorized */}
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* Example protected route (for testing) */}
+          {/* Example protected route */}
           <Route
             path="/protected"
             element={
@@ -67,10 +75,10 @@ export default function App() {
           />
         </Route>
 
-        {/* Chatbot Interface (outside main layout) */}
+        {/* Chatbot Interface (outside layout) */}
         <Route path="/chat" element={<ChatInterface />} />
 
-        {/* Patient Profile (Protected Route) */}
+        {/* Patient Profile (Protected) */}
         <Route
           path="/patient/profile"
           element={
@@ -79,6 +87,23 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* ===================== ADMIN DASHBOARD ===================== */}
+        <Route
+          path="/admin/"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="overview" element={<Overview />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="bias-audit" element={<BiasAudit />} />
+          <Route path="security" element={<Security />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
       </Routes>
     </Router>
   );
