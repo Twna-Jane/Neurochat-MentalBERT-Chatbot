@@ -21,7 +21,7 @@ export default function LoginPatient() {
     setError("");
   };
 
-  // Step 1: Login (password check, send OTP)
+  // Step 1: Login with email & password (sends OTP)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -48,17 +48,22 @@ export default function LoginPatient() {
     setLoading(true);
     setError("");
     setMessage("");
+
     try {
       const res = await axios.post(`${API_BASE}/patients/verify`, {
         userId,
         otp,
       });
 
-      // Store role + user details
+      // ✅ Store role + user details for app usage
       const userWithRole = { ...res.data.user, role: "patient" };
       localStorage.setItem("authUser", JSON.stringify(userWithRole));
 
-      navigate("/dashboard/main"); // Redirect to patient dashboard
+      // ✅ Store token and role for ProtectedRoute authentication
+      localStorage.setItem("token", res.data.token || "dummy-token");
+      localStorage.setItem("role", "patient");
+
+      navigate("/chat");
     } catch (err) {
       setError(err.response?.data?.error || "OTP verification failed");
     } finally {

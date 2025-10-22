@@ -10,6 +10,8 @@ import SignupPatient from "../pages/signup/SignupPatient";
 import SignupClinician from "../pages/signup/SignupClinician";
 import SignupAdmin from "../pages/signup/SignupAdmin";
 
+import ChatInterface from "./pages/chatInterface";
+
 export default function AppRoutes() {
   return (
     <Router>
@@ -27,6 +29,8 @@ export default function AppRoutes() {
         {/* Reset password Routes */}
         <Route path="/request-reset" element={<RequestReset />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        {/* Chatbot Interface */}
+        <Route path="/chat" element={<ChatInterface />} />
       </Routes>
     </Router>
   );
