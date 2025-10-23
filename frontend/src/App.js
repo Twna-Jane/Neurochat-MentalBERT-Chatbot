@@ -4,65 +4,74 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import Home from "./pages/Home";
 
-// Login pages
+// ===================== LOGIN PAGES =====================
 import LoginPatient from "./pages/login/LoginPatient";
 import LoginClinician from "./pages/login/LoginClinician";
 import LoginAdmin from "./pages/login/LoginAdmin";
 
-// Signup pages
+// ===================== SIGNUP PAGES =====================
 import SignupPatient from "./pages/signup/SignupPatient";
 import SignupClinician from "./pages/signup/SignupClinician";
 import SignupAdmin from "./pages/signup/SignupAdmin";
 
-// Reset password
+// ===================== PASSWORD RESET =====================
 import RequestReset from "./pages/requestReset";
 import ResetPassword from "./pages/resetPassword";
 
-// Protected Route + Unauthorized
+// ===================== PROTECTED ROUTES =====================
 import ProtectedRoute from "./components/protectedRoutes";
 import Unauthorized from "./pages/Unauthorized";
 
-// Chatbot Interface
+// ===================== CHAT + PATIENT =====================
 import ChatInterface from "./pages/chatInterface";
 import PatientProfile from "./pages/patientProfile";
 
-// Admin Dashboard and nested pages
+// ===================== ADMIN DASHBOARD =====================
 import AdminDashboard from "./pages/admin/adminDashboard";
-import Overview from "./pages/admin/overview";
-import SettingsPage from "./pages/admin/settings";
+import AdminOverview from "./pages/admin/overview";
+import AdminSettings from "./pages/admin/settings";
 import BiasAudit from "./pages/admin/biasAudit";
 import Security from "./pages/admin/security";
 import Reports from "./pages/admin/reports";
-import Profile from "./pages/admin/profile";
+import AdminProfile from "./pages/admin/profile";
+
+// ===================== CLINICIAN DASHBOARD =====================
+import ClinicianDashboard from "./pages/clinician/clinicianDashboard";
+import ClinicianOverview from "./pages/clinician/overview";
+import ClinicianSessions from "./pages/clinician/sessions";
+import ClinicianPatients from "./pages/clinician/patients";
+import ClinicianInsights from "./pages/clinician/insights";
+import ClinicianSettings from "./pages/clinician/settings";
+import ClinicianProfile from "./pages/clinician/profile";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Layout for general pages */}
+        {/* ===================== PUBLIC ROUTES ===================== */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
 
-          {/* Login routes */}
+          {/* ---------- LOGIN ROUTES ---------- */}
           <Route path="/login/patient" element={<LoginPatient />} />
           <Route path="/login/clinician" element={<LoginClinician />} />
           <Route path="/login/admin" element={<LoginAdmin />} />
 
-          {/* Signup routes */}
+          {/* ---------- SIGNUP ROUTES ---------- */}
           <Route path="/signup/patient" element={<SignupPatient />} />
           <Route path="/signup/clinician" element={<SignupClinician />} />
           <Route path="/signup/admin" element={<SignupAdmin />} />
 
-          {/* Reset password routes */}
+          {/* ---------- PASSWORD RESET ---------- */}
           <Route path="/request-reset" element={<RequestReset />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-          {/* Unauthorized */}
+          {/* ---------- UNAUTHORIZED ---------- */}
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* Example protected route */}
+          {/* ---------- EXAMPLE PROTECTED ROUTE ---------- */}
           <Route
             path="/protected"
             element={
@@ -75,10 +84,10 @@ export default function App() {
           />
         </Route>
 
-        {/* Chatbot Interface (outside layout) */}
+        {/* ===================== CHAT INTERFACE ===================== */}
         <Route path="/chat" element={<ChatInterface />} />
 
-        {/* Patient Profile (Protected) */}
+        {/* ===================== PATIENT PROFILE ===================== */}
         <Route
           path="/patient/profile"
           element={
@@ -97,12 +106,33 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="overview" element={<Overview />} />
-          <Route path="settings" element={<SettingsPage />} />
+          {/* Default route (index) */}
+          <Route index element={<AdminOverview />} />
+          <Route path="overview" element={<AdminOverview />} />
+          <Route path="settings" element={<AdminSettings />} />
           <Route path="bias-audit" element={<BiasAudit />} />
           <Route path="security" element={<Security />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="profile" element={<Profile />} />
+          <Route path="profile" element={<AdminProfile />} />
+        </Route>
+
+        {/* ===================== CLINICIAN DASHBOARD ===================== */}
+        <Route
+          path="/clinician/"
+          element={
+            <ProtectedRoute allowedRoles={["clinician"]}>
+              <ClinicianDashboard />
+            </ProtectedRoute>
+          }
+        >
+          {/* Default route (index) */}
+          <Route index element={<ClinicianOverview />} />
+          <Route path="overview" element={<ClinicianOverview />} />
+          <Route path="sessions" element={<ClinicianSessions />} />
+          <Route path="patients" element={<ClinicianPatients />} />
+          <Route path="insights" element={<ClinicianInsights />} />
+          <Route path="settings" element={<ClinicianSettings />} />
+          <Route path="profile" element={<ClinicianProfile />} />
         </Route>
       </Routes>
     </Router>
