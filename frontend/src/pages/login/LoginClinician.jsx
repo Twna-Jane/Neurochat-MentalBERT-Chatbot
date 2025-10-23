@@ -54,11 +54,15 @@ export default function LoginClinician() {
         otp,
       });
 
-      // Store role + user details
-      const userWithRole = { ...res.data.user, role: "clinician" };
-      localStorage.setItem("authUser", JSON.stringify(userWithRole));
+      // Store user info in multiple keys for ProtectedRoute
+      const user = res.data.user;
+      if (!user) throw new Error("Missing user data");
 
-      navigate("/dashboard/clinician");
+      localStorage.setItem("authUser", JSON.stringify({ ...user, role: "clinician" }));
+      localStorage.setItem("token", "clinician-session"); // dummy token for validation
+      localStorage.setItem("role", "clinician");
+
+      navigate("/clinician/overview"); 
     } catch (err) {
       setError(err.response?.data?.error || "OTP verification failed");
     } finally {
@@ -88,7 +92,7 @@ export default function LoginClinician() {
     >
       <div className="w-full max-w-sm bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-md">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login/clinician")}
           className="text-sm text-indigo-600 hover:underline mb-4"
         >
           ← Back

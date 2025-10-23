@@ -54,11 +54,11 @@ export default function LoginAdmin() {
         otp,
       });
 
-      // ✅ Save token and role to localStorage
+      // Save token and role to localStorage
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
-      localStorage.setItem("role", "admin"); // ✅ explicit role
+      localStorage.setItem("role", "admin"); // explicit role
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       navigate("/admin/");
@@ -91,7 +91,7 @@ export default function LoginAdmin() {
     >
       <div className="w-full max-w-sm bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-md">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login/admin")}
           className="text-sm text-indigo-600 hover:underline mb-4"
         >
           ← Back

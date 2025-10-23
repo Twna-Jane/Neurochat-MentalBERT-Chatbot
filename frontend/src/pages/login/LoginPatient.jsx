@@ -93,7 +93,7 @@ export default function LoginPatient() {
     >
       <div className="w-full max-w-sm bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-md">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login/patient")}
           className="text-sm text-indigo-600 hover:underline mb-4"
         >
           ← Back
