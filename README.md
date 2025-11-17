@@ -1,207 +1,217 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/inoLPW_E)
+Update my Readme as now I have two labels Normal and depressed and also the file structure [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/inoLPW_E)
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=20099703&assignment_repo_type=AssignmentRepo)
 
 
-# Neurochat: MentalBERT Health Chatbot for Depression Screening
+#  Neurochat: MentalBERT Health Chatbot for Depression Diagnosis
 
-This project is an AI-powered mental health assistant designed to allow users to express their emotions and receive an early screening of depression.
-The system integrates a fine-tuned MentalBERT model with a React + Firebase web platform for secure, role-based interactions.
+This project is an **AI-powered mental health assistant** that allows patients to express their emotions and receive an **early screening of depression risk** levels (Normal or Depressed).  
+The system combines **Natural Language Processing (NLP)** using **MentalBERT** with a **React + Firebase** web application for secure, role-based interactions.
 
-Disclaimer: This chatbot is for academic and research purposes only.
-It is not a medical diagnostic tool and should not replace professional care.
+>  **Disclaimer**: This tool is for **educational and research purposes only**.  
+> It is **not intended** to replace professional medical advice, diagnosis, or treatment.
 
-#  Features
-#  Frontend (React + Firebase)
+---
 
-Modern UI built with React + TailwindCSS
+##  Features
 
-Firebase Authentication with OTP login
+###  Frontend (React + Firebase)
+- Modern UI built with **React + TailwindCSS**
+- Role-based authentication via **Firebase Auth** (Patient, Clinician, Admin)
+- **OTP-based login** using Firebase phone verification
+- **Real-time Firestore data** for user profiles and chat history
+- Interactive **chatbot interface** for depression screening
 
-Role-based access: Patient, Clinician, Admin
+###  Machine Learning (MentalBERT)
+- Machine Learning (MentalBERT + Custom Fine-Tuning)
+-Fine-tuned MentalBERT model for:
+Normal
+Depressed
+Hugging Face Transformers (PyTorch)
+-Model served via Python API (Flask)
 
-Real-time chat with Firestore updates
+###  Backend (Node.js + Express)
+- RESTful API for chatbot inference and user role management
+- Integrates with Firebase Admin SDK for data verification
+- Handles secure JWT-based sessions and token validation
 
-Clean user experience with session persistence
+---
 
-#  Machine Learning (MentalBERT)
-
-MentalBERT fine-tuned for binary classification
-
-Predicts:
-
-# Normal (0)
-
-# Depressed (1)
-
-Trained using Reddit depression dataset and cleaned textual responses
-
-Model deployed via a lightweight Python inference server
-
-# Backend (Node.js + Express)
-
-REST API for prediction requests and role validation
-
-Firebase Admin SDK for secure token handling
-
-Supports real-time patient-clinician review workflow
-
-#  Updated Project Structure
-neurochat-mentalbert/
-│── backend/
-│   ├── routes/               # API endpoints (auth, chatbot)
-│   ├── controllers/          # Chat logic and ML inference
-│   ├── utils/                # Helpers (token validation, error handling)
-│   ├── config/firebase.js    # Firebase Admin setup
-│   └── server.js             # Main server entry
+##  Project Structure
+```
+neurochat-mentalbert-chatbot/
 │
-│── frontend/
-│   ├── src/pages/            # Login, Dashboard, Clinician Panel, Chatbot
-│   ├── src/components/       # UI components
-│   ├── src/context/          # Auth & role context
-│   ├── src/services/         # API communication
-│   └── src/App.js            # Routes and navigation
+├── backend/                        # Node.js + Express API
+│   ├── routes/
+│   ├── controllers/
+│   ├── config/firebase.js
+│   └── server.js
 │
-│── model/
-│   ├── train_mentalbert.ipynb   # Fine-tuning notebook
-│   ├── utils/                    # Tokenizer + prediction utilities
-│   ├── app.py                    # Python inference server (Flask/FastAPI)
-│   ├── saved_model/              #  Ignored in Git (.gitignore)
-│   └── tokenizer/                # Tokenizer files
+├── frontend/                       # React application
+│   ├── src/pages/
+│   ├── src/components/
+│   ├── src/context/
+│   └── src/App.js
 │
-│── dataset/
-│   ├── depression_clean.csv      # Training dataset
-│   └── README.md                 # Dataset description
+├── model/                          # ML training + inference
+│   ├── app.py                      # Flask API for model inference
+│   ├── utils/predict.py            # Preprocessing + model loader
+│   ├── Mentalbert-2class/          # (Ignored in Git) Trained MentalBERT weights
+│   ├── meantal-health-gemma3/      # (Ignored in Git) Optional large LLM weights
+│   ├── train_mentalbert.ipynb      # Training Notebook
+│   └── requirements.txt
 │
-│── .gitignore
-│── README.md
-│── .env.example
+├── dataset/                        # Training data (CSV)
+│   └── depression_data.csv
+│
+├── .gitignore                      # Ignores model folders
+├── README.md
+└── .env.example
 
-#  Environment Variables
-# Backend .env
+```
+
+---
+
+## Environment Variables
+
+###  Backend `.env`
+```bash
 PORT=5000
 FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_CLIENT_EMAIL=your_firebase_client_email
 FIREBASE_PRIVATE_KEY="your_firebase_private_key"
 MODEL_API_URL=http://localhost:8000/predict
 JWT_SECRET=your_jwt_secret
+```
 
-# Frontend .env
+###  Frontend `.env`
+```bash
 REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
 REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
 REACT_APP_FIREBASE_PROJECT_ID=your_project_id
 REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 REACT_APP_FIREBASE_APP_ID=your_app_id
+REACT_APP_FIREBASE_MEASUREMENT_ID=your_measurement_id
 REACT_APP_API_URL=http://localhost:5000/api
+```
 
-#  Model Training (Updated for Binary Classification)
-# Dataset
+---
 
-The model is trained on a cleaned Reddit depression dataset containing two classes:
+##  Model Training (MentalBERT)
 
-Text	Label
-"I haven't slept well for weeks..."	1 (Depressed)
-"Feeling good today, went for a walk."	0 (Normal)
-Labels
+#  Dataset Description (Normal vs Depressed)
+-Trained model using a two-class labelled dataset:
 
-Normal → 0
+# Text Input	Label
+“I feel okay today.”	Normal
+“I haven't slept for days and I feel hopeless.”	Depressed
+✨ Labels Used
+     0 → Normal  
+     1 → Depressed
+# Dataset Workflow
+-Loaded CSV data
+-Cleaned & preprocessed text (lowercasing, punctuation removal, tokenization)
 
-Depressed → 1
+-Split into:
+Train (80%)
+Validation (10%)
+Test (10%)
+Feature Extraction
 
-Training Pipeline
+-Tokenized using BERT tokenizer
+-Converted text → numerical IDs
 
-Load dataset using load_dataset()
+Applied:
+-Attention masks
+-Padding
 
-Clean text (remove URLs, emojis, duplicate spaces)
+-Labels mapped to integers (0,1)
+No one-hot encoding needed (BERT handles this through embeddings)
 
-Tokenize using AutoTokenizer(MentalBERT)
+#  Model Training (MentalBERT Fine-Tuning)
 
-# Train model with:
+# Training pipeline inside Mentalbert.ipynb:
+-Load MentalBERT from Hugging Face
+-Tokenize dataset
 
-80% training
+# Configure training:
+-Cross-entropy loss
+-AdamW optimizer
+-Learning rate scheduler
+-Mixed precision (fp16)
+-Train for 3–5 epochs
 
-10% validation
-
-10% testing
-
-Evaluate accuracy, loss, and Confusion Matrix
-
-Export model to saved_model/
-
-Evaluation Metrics
-
-Training Accuracy
-
-Validation Accuracy
-
-Loss Curve
-
-Classification Report (Precision, Recall, F1)
-
+# Evaluate using:
+Accuracy
+F1-score
 Confusion Matrix
+Save model into:
+ model/Mentalbert-2class/
 
-(Screenshots of:)
 
-Training loss curve
+---
 
-Confusion Matrix
+## 🔧 Installation & Setup
 
-Accuracy per epoch
-
-#  Installation & Setup
-# Backend
+### Backend (Express + Firebase Admin)
+```bash
 cd backend
 npm install
 cp .env.example .env
 npm start
+```
 
-# Frontend
+### Frontend (React + Firebase)
+```bash
 cd frontend
 npm install
 cp .env.example .env
 npm start
+```
 
-# Model Inference Server
+###  Model Server (Optional - Python)
+```bash
 cd model
 python app.py
+```
 
-#  Usage Workflow
+---
 
-User signs in using Firebase OTP.
+## Usage
 
-The chatbot prompts: "How are you feeling today?"
+1. **Register/Login** using Firebase (OTP-based).  
+2. **Patients** chat with the AI to describe symptoms.  
+3. **Clinicians** review patient risk assessments.  
+4. **Admins** manage system users and access levels.  
+5. Model returns **Normal/Depressed** prediction + recommendations.
 
-User writes a message.
+---
 
-The message is sent to the backend → ML Model.
+##  Tech Stack
 
-Model predicts:
+| Layer | Technologies |
+|-------|---------------|
+| **Frontend** | React, TailwindCSS, Firebase Auth |
+| **Backend** | Node.js, Express, Firebase Admin SDK |
+| **Database** | Firestore |
+| **ML Model** | Hugging Face Transformers (MentalBERT, PyTorch) |
+| **Deployment** | Colab (training), Express API (inference) |
 
-0 (Normal)
+---
 
-1 (Depressed)
+##  Contributors
+- **Tiffany Ndungi** – Full-stack Developer & ML Engineer  
+- **Hugging Face** – Pretrained MentalBERT model  
+- **Google Firebase** – Authentication & Firestore backend  
 
-Clinicians review patient results through a dashboard.
+---
 
-Admins manage user roles.
+## ⚠️ Disclaimer
+This project is **for academic and research purposes** only.  
+It should not be used for real clinical diagnosis or emergency cases.  
+If you are struggling, please reach out to a **mental health professional**.
 
-#  Tech Stack
-Layer	Tools
-Frontend	React, Tailwind, Firebase Auth
-Backend	Node.js, Express, Firebase Admin
-ML Model	MentalBERT, PyTorch, Transformers
-Database	Firestore
-Deployment	Colab (training), Local/Server API (inference)
+---
 
-#  Contributors
-
-Tiffany Ndungi – Full-Stack Developer & ML Engineer
-
-Hugging Face – MentalBERT pretrained model
-
-#  Medical Disclaimer
-
-This project is ONLY for academic and research exploration.
-If you or someone you know is struggling, please contact a mental health professional immediately.
-
+> *Built with compassion to advance AI for mental health awareness.* 💙  
 
