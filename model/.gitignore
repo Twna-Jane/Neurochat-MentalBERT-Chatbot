@@ -1,0 +1,7 @@
+# Ignore large model directories
+mental-health-gemma3/
+Mentalbert-2class/
+checkpoints/
+*.bin
+*.pt
+*.safetensors

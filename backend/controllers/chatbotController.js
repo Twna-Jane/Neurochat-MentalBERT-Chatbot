@@ -1,5 +1,5 @@
 import db from "../firebase/firebaseConfig.js";
-import { getChatbotPrediction } from "../utils/mentalBERT.js"; // your ML model logic
+import { getChatbotPrediction } from "../utils/mentalBERT.js"; 
 
 // Store and return chatbot message + diagnosis
 export const handleChatMessage = async (req, res) => {
@@ -28,7 +28,7 @@ export const handleChatMessage = async (req, res) => {
       timestamp: new Date(),
     });
   } catch (error) {
-    console.error("❌ Chat error:", error);
+    console.error(" Chat error:", error);
     res.status(500).json({ error: "Failed to process message" });
   }
 };
