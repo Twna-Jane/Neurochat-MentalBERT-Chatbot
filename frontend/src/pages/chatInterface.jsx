@@ -1,60 +1,148 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, Bot, User, LogOut, UserCircle2, MessageSquare, Plus } from "lucide-react";
+import {
+  Send,
+  Bot,
+  User,
+  LogOut,
+  UserCircle2,
+  MessageSquare,
+  Plus,
+} from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  updateDoc,
+  query,
+  orderBy,
+  doc,
+  arrayUnion,
+  serverTimestamp,
+} from "firebase/firestore";
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
   const chatEndRef = useRef(null);
   const navigate = useNavigate();
 
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  // Assume user data is stored in localStorage after login
+  const user = JSON.parse(localStorage.getItem("authUser"));
+  const userId = user?.uid || "guest"; // fallback if user not logged in
 
-  // Fetch chat history for logged-in user
+  // Flask API endpoint (use port 5001 for model backend)
+  const API_BASE = "http://127.0.0.1:5001";
+
+  // On mount, fetch the latest session or create one if none exists
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/chat/history`, {
-          withCredentials: true,
+    const fetchOrCreateSession = async () => {
+      const sessionsRef = collection(db, "chatlogs", userId, "sessions");
+      const q = query(sessionsRef, orderBy("created_at", "desc"));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const latestSession = snapshot.docs[0];
+        setCurrentSessionId(latestSession.id);
+        setMessages(latestSession.data().messages || []);
+      } else {
+        // Create a new session
+        const newSessionRef = await addDoc(sessionsRef, {
+          created_at: serverTimestamp(),
+          messages: [],
         });
-        setHistory(res.data.history || []);
-      } catch (err) {
-        console.error("Error loading chat history:", err);
+        setCurrentSessionId(newSessionRef.id);
+        setMessages([]);
       }
     };
-    fetchHistory();
-  }, [API_BASE]);
+    if (userId) fetchOrCreateSession();
+  }, [userId]);
+
+  // Show previous sessions in sidebar
+  useEffect(() => {
+    const fetchSessions = async () => {
+      const sessionsRef = collection(db, "chatlogs", userId, "sessions");
+      const q = query(sessionsRef, orderBy("created_at", "desc"));
+      const snapshot = await getDocs(q);
+      const sessions = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setHistory(sessions);
+    };
+    if (userId) fetchSessions();
+  }, [userId, currentSessionId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Handle send
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || !currentSessionId) return;
 
-    const userMsg = { sender: "user", text: input };
+    const userMsg = {
+      sender: "user",
+      text: input,
+      timestamp: new Date().toISOString(),
+    };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
 
     try {
-      const res = await axios.post(
-        `${API_BASE}/chat`,
-        { text: input },
-        { withCredentials: true }
-      );
-      const botReply = { sender: "bot", text: res.data.reply };
+      // Send to Flask backend /chat endpoint
+      const res = await axios.post(`${API_BASE}/chat`, { text: input });
+      const botReply = {
+        sender: "bot",
+        text: `${res.data.reply} (Level: ${res.data.prediction}, Confidence: ${res.data.confidence.toFixed(2)})`,
+        timestamp: new Date().toISOString(),
+      };
       setMessages((prev) => [...prev, botReply]);
+
+      // Update session document with new messages
+      const sessionRef = doc(db, "chatlogs", userId, "sessions", currentSessionId);
+      await updateDoc(sessionRef, {
+        messages: arrayUnion(userMsg, botReply),
+      });
     } catch (err) {
-      console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "Sorry, something went wrong." },
-      ]);
+      console.error("Error:", err);
+      const errorMsg = {
+        sender: "bot",
+        text: "Sorry, something went wrong.",
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+      // Optionally, update Firestore with error message
+      const sessionRef = doc(db, "chatlogs", userId, "sessions", currentSessionId);
+      await updateDoc(sessionRef, {
+        messages: arrayUnion(errorMsg),
+      });
     }
+  };
+
+  // Start a new chat session
+  const handleNewChat = async () => {
+    const sessionsRef = collection(db, "chatlogs", userId, "sessions");
+    const newSessionRef = await addDoc(sessionsRef, {
+      created_at: serverTimestamp(),
+      messages: [],
+    });
+    setCurrentSessionId(newSessionRef.id);
+    setMessages([]);
+    setSelectedChat(null);
+  };
+
+  // When a session is selected, show its messages
+  const handleSelectChat = (chat) => {
+    setSelectedChat(chat);
+    setMessages(chat.messages || []);
+    setCurrentSessionId(chat.id);
   };
 
   const handleLogout = () => {
@@ -66,28 +154,15 @@ export default function ChatInterface() {
     navigate("/patient/profile");
   };
 
-  const handleSelectChat = (chat) => {
-    setSelectedChat(chat);
-    setMessages(chat.messages);
-  };
-
-  // ✅ New Chat Button Logic
-  const handleNewChat = () => {
-    setSelectedChat(null);
-    setMessages([]);
-  };
-
   return (
     <div className="flex h-screen bg-white-900 text-gray-100">
-      {/* Sidebar: Chat history */}
+      {/* Sidebar */}
       <aside className="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
         <div className="p-4 text-lg font-semibold border-b border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-blue-400" />
             <span>Chat History</span>
           </div>
-
-          {/* ✅ New Chat Button */}
           <button
             onClick={handleNewChat}
             title="Start New Chat"
@@ -96,30 +171,34 @@ export default function ChatInterface() {
             <Plus className="w-4 h-4 text-white" />
           </button>
         </div>
-
         <div className="flex-1 overflow-y-auto">
           {history.length === 0 ? (
             <p className="text-gray-500 text-sm p-4">No previous chats found.</p>
           ) : (
             history.map((chat, i) => (
               <button
-                key={i}
+                key={chat.id || i}
                 onClick={() => handleSelectChat(chat)}
                 className={`w-full text-left p-3 hover:bg-gray-700 transition ${
-                  selectedChat === chat ? "bg-gray-700" : ""
+                  selectedChat?.id === chat.id ? "bg-gray-700" : ""
                 }`}
               >
-                {chat.title || `Session ${i + 1}`}
+                {chat.messages && chat.messages.length > 0
+                  ? chat.messages[0].text.slice(0, 25)
+                  : "New Session"}
                 <p className="text-xs text-gray-400 mt-1">
-                  {new Date(chat.date).toLocaleString()}
+                  {chat.created_at?.seconds
+                    ? new Date(chat.created_at.seconds * 1000).toLocaleString()
+                    : chat.created_at
+                    ? new Date(chat.created_at).toLocaleString()
+                    : ""}
                 </p>
               </button>
             ))
           )}
         </div>
       </aside>
-
-      {/* Main Chat Section */}
+      {/* Chat Section */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
         <header className="bg-gray-800 px-6 py-3 flex justify-between items-center border-b border-gray-700 shadow">
@@ -144,8 +223,7 @@ export default function ChatInterface() {
             </button>
           </div>
         </header>
-
-        {/* Chat messages */}
+        {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900">
           {messages.map((msg, i) => (
             <div
@@ -173,8 +251,7 @@ export default function ChatInterface() {
           ))}
           <div ref={chatEndRef} />
         </div>
-
-        {/* Input form */}
+        {/* Input Form */}
         <form
           onSubmit={handleSend}
           className="p-4 bg-gray-800 border-t border-gray-700 flex"
