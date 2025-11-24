@@ -133,7 +133,6 @@ Interpretation:
 - Role: Provides dialogue management and context-aware responses
 - Enhances natural conversational flow
 - Improves generalisation across user input variations
-- Metrics like accuracy/precision/recall not applicable
 
 Observations:
 - Supports MentalBERT by guiding user interaction
