@@ -1,7 +1,6 @@
 # NeuroChat: Transformer-Based Model for Depression Diagnosis
-
+---
 # Models: MentalBERT & MentalHealth-Gemma
-
 ---
 
 ## 1. Introduction
