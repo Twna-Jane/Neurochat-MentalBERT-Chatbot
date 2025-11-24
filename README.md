@@ -24,9 +24,9 @@ The system combines **Natural Language Processing (NLP)** using **MentalBERT** w
 ###  Machine Learning (MentalBERT)
 - Machine Learning (MentalBERT + Custom Fine-Tuning)
 -Fine-tuned MentalBERT model for:
-Normal
-Depressed
-Hugging Face Transformers (PyTorch)
+   Normal
+   Depressed
+   Hugging Face Transformers (PyTorch)
 -Model served via Python API (Flask)
 
 ###  Backend (Node.js + Express)
@@ -103,50 +103,49 @@ REACT_APP_API_URL=http://localhost:5000/api
 -Trained model using a two-class labelled dataset:
 
 # Text Input	Label
-“I feel okay today.”	Normal
-“I haven't slept for days and I feel hopeless.”	Depressed
-✨ Labels Used
-     0 → Normal  
-     1 → Depressed
+- “I feel okay today.”- Normal
+- “I haven't slept for days and I feel hopeless.”- Depressed
+- ✨ Labels Used
+   -  0 → Normal  
+   - 1 → Depressed
 # Dataset Workflow
--Loaded CSV data
--Cleaned & preprocessed text (lowercasing, punctuation removal, tokenization)
+- Loaded CSV data
+- Cleaned & preprocessed text (lowercasing, punctuation removal, tokenization)
 
--Split into:
-Train (80%)
-Validation (10%)
-Test (10%)
-Feature Extraction
+- Split into:
+- Train (70%)
+- Validation (15%)
+- Test (15%)
 
+**Feature Extraction**
 -Tokenized using BERT tokenizer
 -Converted text → numerical IDs
 
 Applied:
--Attention masks
--Padding
-
--Labels mapped to integers (0,1)
-No one-hot encoding needed (BERT handles this through embeddings)
+- Attention masks
+- Padding
+- Labels mapped to integers (0,1)
+- No one-hot encoding needed (BERT handles this through embeddings)
 
 #  Model Training (MentalBERT Fine-Tuning)
 
 # Training pipeline inside Mentalbert.ipynb:
--Load MentalBERT from Hugging Face
--Tokenize dataset
+- Load MentalBERT from Hugging Face
+- Tokenize dataset
 
 # Configure training:
--Cross-entropy loss
--AdamW optimizer
--Learning rate scheduler
--Mixed precision (fp16)
--Train for 3–5 epochs
+- Cross-entropy loss
+- AdamW optimizer
+- Learning rate scheduler
+- Mixed precision (fp16)
+- Train for 3–5 epochs
 
 # Evaluate using:
 Accuracy
 F1-score
 Confusion Matrix
 Save model into:
- model/Mentalbert-2class/
+model/Mentalbert-2class/
 
 
 ---
