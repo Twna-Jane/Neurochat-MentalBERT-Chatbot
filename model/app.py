@@ -48,7 +48,7 @@ def classify_text(text):
 
 # Utility function: generate response
 
-def generate_response(user_text, max_tokens=32):
+def generate_response(user_text, max_tokens=128):
     output = generator([{"role": "user", "content": user_text}],
                        max_new_tokens=max_tokens,
                        return_full_text=False)[0]
