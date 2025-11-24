@@ -5,8 +5,8 @@ import { Button } from "../../components/button";
 const BiasAudit = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [auditResults, setAuditResults] = useState([
-    { id: 12, status: "Passed ✅", date: "Oct 21, 2025", notes: "No bias detected across gender or ethnicity." },
-    { id: 11, status: "Minor Gender Bias ⚠️", date: "Sept 10, 2025", notes: "Slight imbalance in sentiment responses." },
+    { id: 12, status: "Passed ✅", date: "Nov 19, 2025", notes: "No bias detected across gender or ethnicity." },
+    { id: 11, status: "Minor Gender Bias ⚠️", date: "Nov 10, 2025", notes: "Slight imbalance in sentiment responses." },
   ]);
 
   const handleRunAudit = () => {

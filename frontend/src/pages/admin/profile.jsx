@@ -15,10 +15,11 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch the admin profile from Firestore based on the authenticated user
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("onAuthStateChanged user:", user); // Debug log
       if (user) {
         setUserId(user.uid);
         try {
@@ -26,16 +27,17 @@ const Profile = () => {
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            
             setAdminData(docSnap.data());
+            setError("");
           } else {
-            console.warn("No profile found for this admin in Firestore.");
+            setError("No profile found for this admin in Firestore.");
           }
-        } catch (error) {
-          console.error("Error fetching admin profile:", error);
+        } catch (err) {
+          setError("Error fetching admin profile.");
+          console.error("Error fetching admin profile:", err);
         }
       } else {
-        console.warn("No authenticated user found.");
+        setError("No authenticated user found.");
       }
       setLoading(false);
     });
@@ -50,15 +52,17 @@ const Profile = () => {
   const handleSave = async () => {
     if (!userId) return;
     setSaving(true);
+    setError("");
     try {
       const docRef = doc(db, "admins", userId);
       await updateDoc(docRef, {
-        name: adminData.name, // Only update name
+        name: adminData.name,
+        // Add other fields here if you want to allow editing more
       });
       alert("Profile updated successfully!");
-    } catch (error) {
-      console.error("Error saving profile:", error);
-      alert("Failed to update profile. Check console for details.");
+    } catch (err) {
+      setError("Failed to update profile. Check console for details.");
+      console.error("Error saving profile:", err);
     } finally {
       setSaving(false);
     }
@@ -74,8 +78,10 @@ const Profile = () => {
         <CardHeader>
           <CardTitle>Admin Profile</CardTitle>
         </CardHeader>
-
         <CardContent className="space-y-3">
+          {error && (
+            <div className="text-red-500 text-sm mb-2">{error}</div>
+          )}
           {/* Name */}
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
@@ -86,7 +92,6 @@ const Profile = () => {
               placeholder="Admin Name"
             />
           </div>
-
           {/* Email (read-only) */}
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
@@ -97,13 +102,11 @@ const Profile = () => {
               placeholder="admin@example.com"
             />
           </div>
-
           {/* Role (read-only) */}
           <div>
             <label className="block text-sm font-medium mb-1">Role</label>
             <Input name="role" value={adminData.role} disabled />
           </div>
-
           <Button onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save Changes"}
           </Button>
