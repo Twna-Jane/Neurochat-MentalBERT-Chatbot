@@ -4,13 +4,23 @@
 
 ---
 
-## 1. Executive Summary
+## 1. Introduction
+## 1.1 Backgournd
 
-NeuroChat is a transformer-based depression screening system leveraging MentalBERT for classification and MentalHealth-Gemma for conversational logic. MentalBERT detects depressive language in user-generated text with high accuracy, privacy, and reliability. Gemma supports context-aware responses, improving the natural interaction and generalisation of the system.
+Depression is a major global health challenge, yet many people remain undiagnosed due to stigma, limited access to care, and outdated screening tools. Traditional methods like the PHQ-9 often require in-person assessments, making them inaccessible for many users. Advances in AI and NLP, especially transformer models such as BERT and MentalBERT,now provide new opportunities to detect depressive language from everyday text. This project leverages these developments to create a hybrid MentalBERT-powered chatbot that performs private, on-device depression screening while using cloud services only for secure authentication and data management.
 
-The project encompasses preprocessing, model training, evaluation, and deployment pipelines, ensuring reproducibility and privacy-preserving inference.
+## 1.2 Problem Statement
+Current mental health screening tools face major limitations in accessibility, cultural sensitivity, and privacy protection. Many widely used tools require in-person assessments, making them inaccessible to individuals in low-resource or remote settings. Existing AI-based screening systems often depend on cloud processing, which raises significant privacy and ethical concerns, especially for sensitive mental-health data. Most importantly, current screening solutions rarely connect users to appropriate support resources, leaving many without immediate help after risk is detected. This highlights the need for a private, accessible, and culturally adaptable AI-driven depression screening system.
+
+## 1.3 Main Obejctive
+The primary objective of this project is to develop an AI-powered chatbot for depression diagnosis and mitigation using a fine-tuned MentalBERT model. The system aims to provide accurate on-device depression screening.Through privacy-preserving inference and context-sensitive support, the chatbot enhances accessibility, confidentiality, and relevance in mental health assistance.
+
+## Justification
+This project addresses critical gaps in mental health screening by developing a bias-aware chatbot that performs all analysis locally, eliminating privacy risks and increasing user trust.It also transforms simple detection into actionable support by connecting users to relevant mental health resources in real time.
+
 
 ---
+
 
 ## 2. Approach
 
@@ -92,6 +102,7 @@ Metrics used:
 - Precision
 - Recall
 - F1-Score
+
 ![alt text](image.png)
 
 ### Confusion Matrix
@@ -185,3 +196,13 @@ Observations:
 
 ---
 
+## 8. Production Improvements
+- ## 8. Production Improvements
+
+- **Train using clinically validated datasets** (e.g., DAIC-WOZ, CLPsych, eRisk) to improve diagnostic reliability and clinical relevance.  
+- **Implement a low-confidence flagging system** that alerts users when model confidence drops below a threshold and recommends follow-up actions.  
+- **Deploy on GPU-supported infrastructure** to significantly reduce inference time and improve real-time responsiveness.  
+- **Expand multilingual and culturally adaptive training** to further reduce bias and improve screening accuracy across diverse user groups.  
+- **Introduce model quantization and optimization** for faster on-device inference, especially on low-power devices.  
+- **Add continuous learning and model monitoring** to maintain long-term performance as language patterns evolve.
+- **Uncertainty Flagging System:**: Develop a system to flag predictions where MentalBERT's confidence is low.
