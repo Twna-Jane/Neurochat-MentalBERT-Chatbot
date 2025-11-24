@@ -1,46 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase"; 
+import { db } from "../firebase";
 import { ArrowLeft } from "lucide-react";
 
 const PatientProfile = () => {
   const [patient, setPatient] = useState(null);
-  const [loading, setLoading] = useState(true); // Loading for profile fetch
-  const [authChecked, setAuthChecked] = useState(false); // Wait for auth initialization
+  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const auth = getAuth();
 
   useEffect(() => {
-    // Listen for auth state changes
+    // Ensure session persistence (optional, but helps with auth issues)
+    setPersistence(auth, browserLocalPersistence).catch((err) => {
+      console.error("Error setting persistence:", err);
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("Auth state changed:", user);
       if (!user) {
-        // User not signed in, redirect to login
+        setError("You are not logged in. Please log in to view your profile.");
         navigate("/login/patient");
         return;
       }
 
       try {
-        // Fetch patient data from Firestore
         const userDoc = await getDoc(doc(db, "patients", user.uid));
         if (userDoc.exists()) {
           setPatient(userDoc.data());
+          setError("");
         } else {
-          console.warn("No user data found for this account.");
+          setError("No user data found for this account.");
         }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+      } catch (err) {
+        setError("Error fetching profile.");
+        console.error("Error fetching profile:", err);
       } finally {
         setLoading(false);
         setAuthChecked(true);
       }
     });
 
-    return () => unsubscribe(); // Clean up listener on unmount
+    return () => unsubscribe();
   }, [auth, navigate]);
 
-  // Show loading while waiting for auth initialization
   if (!authChecked || loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -49,7 +55,20 @@ const PatientProfile = () => {
     );
   }
 
-  // If profile not found
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+        <p className="text-lg text-red-600 mb-4">{error}</p>
+        <button
+          onClick={() => navigate("/login/patient")}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
   if (!patient) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
@@ -103,7 +122,6 @@ const PatientProfile = () => {
   );
 };
 
-// Reusable sub-component for each profile item
 const ProfileItem = ({ label, value }) => (
   <div className="flex justify-between items-center border-b pb-2">
     <span className="text-gray-600 font-medium">{label}</span>

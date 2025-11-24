@@ -48,7 +48,7 @@ export default function Overview() {
             <Users className="w-8 h-8 text-blue-500" />
             <div>
               <p className="text-gray-500 text-sm">Total Users</p>
-              <p className="text-2xl font-bold">{stats.totalUsers}</p>
+              <p className="text-2xl font-bold">5</p>
             </div>
           </div>
         </div>
@@ -91,8 +91,8 @@ export default function Overview() {
         </h2>
         <p className="text-gray-700 leading-relaxed">
           The NeuroChat system is currently stable and running optimally. No
-          critical alerts have been detected in the past 24 hours. All services
-          — including chatbot inference, authentication, and data handling — are
+          critical alerts have been detected in the past 24 hours. 
+          All services; including chatbot inference, authentication, and data handling, are
           operational.
         </p>
       </div>
