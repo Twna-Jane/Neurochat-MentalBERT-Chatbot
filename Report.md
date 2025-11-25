@@ -203,4 +203,3 @@ Observations:
 - **Expand multilingual and culturally adaptive training** to further reduce bias and improve screening accuracy across diverse user groups.  
 - **Introduce model quantization and optimization** for faster on-device inference, especially on low-power devices.  
 - **Add continuous learning and model monitoring** to maintain long-term performance as language patterns evolve.
-- **Uncertainty Flagging System:**: Develop a system to flag predictions where MentalBERT's confidence is low.
