@@ -1,4 +1,6 @@
 # NeuroChat: Transformer-Based Model for Depression Diagnosis
+Name: Ndungi Tiffany Waithira
+Supervisor: Emmanuel Olang'
 ---
 # Models: MentalBERT & MentalHealth-Gemma
 ---
