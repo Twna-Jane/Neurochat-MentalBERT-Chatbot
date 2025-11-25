@@ -4,14 +4,14 @@
 ---
 
 ## 1. Introduction
-## 1.1 Backgournd
+## 1.1 Background
 
 Depression is a major global health challenge, yet many people remain undiagnosed due to stigma, limited access to care, and outdated screening tools. Traditional methods like the PHQ-9 often require in-person assessments, making them inaccessible for many users. Advances in AI and NLP, especially transformer models such as BERT and MentalBERT,now provide new opportunities to detect depressive language from everyday text. This project leverages these developments to create a hybrid MentalBERT-powered chatbot that performs private, on-device depression screening while using cloud services only for secure authentication and data management.
 
 ## 1.2 Problem Statement
 Current mental health screening tools face major limitations in accessibility, cultural sensitivity, and privacy protection. Many widely used tools require in-person assessments, making them inaccessible to individuals in low-resource or remote settings. Existing AI-based screening systems often depend on cloud processing, which raises significant privacy and ethical concerns, especially for sensitive mental-health data. Most importantly, current screening solutions rarely connect users to appropriate support resources, leaving many without immediate help after risk is detected. This highlights the need for a private, accessible, and culturally adaptable AI-driven depression screening system.
 
-## 1.3 Main Obejctive
+## 1.3 Main Objective
 The primary objective of this project is to develop an AI-powered chatbot for depression diagnosis and mitigation using a fine-tuned MentalBERT model. The system aims to provide accurate on-device depression screening.Through privacy-preserving inference and context-sensitive support, the chatbot enhances accessibility, confidentiality, and relevance in mental health assistance.
 
 ## Justification
